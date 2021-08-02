@@ -7,3 +7,5 @@ Pillow<8.3.0
 scikit-image
 python-bidi
 PyYAML
+onnx
+onnxruntime
