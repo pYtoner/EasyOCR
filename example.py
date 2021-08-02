@@ -1,7 +1,5 @@
 from PIL import Image
 import easyocr
-from easyocr import craft_utils
-from time import sleep
 import onnxruntime
 import torch
 import numpy as np
@@ -64,7 +62,7 @@ for out in y:
     score_link = out[:, :, 1]
 
     # Post-processing
-    boxes, polys, mapper = craft_utils.getDetBoxes(
+    boxes, polys, mapper = getDetBoxes(
         score_text, score_link, 0.7, 0.4, 0.4, False, estimate_num_chars)
 
     # coordinate adjustment
