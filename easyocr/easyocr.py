@@ -177,6 +177,7 @@ class Reader(object):
             self.character = model['characters']
 
             model_path = os.path.join(self.model_storage_directory, model['filename'])
+            print(self.model_storage_directory)
             # check recognition model file
             if recognizer:
                 if os.path.isfile(model_path) == False:
