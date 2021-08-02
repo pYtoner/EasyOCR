@@ -154,6 +154,8 @@ def get_recognizer(recog_network, network_params, character,\
                    separator_list, dict_list, model_path,\
                    device = 'cpu', quantize = True):
 
+    print(f"using model at: {model_path}")
+
     converter = CTCLabelConverter(character, separator_list, dict_list)
     num_class = len(converter.character)
 
