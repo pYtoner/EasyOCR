@@ -23,8 +23,9 @@ RUN apt-get update -y && \
 RUN mkdir "$service_home" \
     && git clone "https://github.com/$gh_username/EasyOCR.git" "$service_home" \
     && cd "$service_home" \
-    && git remote add upstream "https://github.com/$gh_username/EasyOCR.git" \
-    && git pull upstream master
+#     && git remote add upstream "https://github.com/$gh_username/EasyOCR.git" \
+    && git pull
+    # upstream master
 
 # Build
 RUN cd "$service_home" \
