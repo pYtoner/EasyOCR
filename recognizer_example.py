@@ -6,7 +6,7 @@ import torch.nn.functional as F
 import cv2
 import onnxruntime
 import torchvision.transforms as transforms
-from torchvision.transforms.functional import to_tensor
+from torchvision.transforms.functional import to_tensor, to_pil_image
 import math
 
 
@@ -17,7 +17,8 @@ def to_numpy(tensor):
 
 
 def custom_mean(x):
-    return x.prod()**(2.0/np.sqrt(len(x)))
+    print("--", x.prod())
+    return x.prod() ** (2.0 / np.sqrt(len(x)))
 
 
 def decode_greedy(text_index, length):
@@ -31,7 +32,7 @@ def decode_greedy(text_index, length):
     for l in length:
         t = text_index[index:index + l]
         # Returns a boolean array where true is when the value is not repeated
-        a = np.insert(~((t[1:] == t[:-1])), 0, True)
+        a = np.insert(~(t[1:] == t[:-1]), 0, True)
         # Returns a boolean array where true is when the value is not in the ignore_idx list
         b = ~np.isin(t, np.array(ignore_idx))
         # Combine the two boolean array
@@ -80,10 +81,14 @@ image_list, max_width = get_image_list(
     [[6, 254, 2, 26]], [], img_cv_grey, model_height=imgH)
 image = image_list[0]
 
+# print(image[1].shape)
 print(f"max_width: {max_width}")
 
+# Image.fromarray(image[1], 'L').show()
 image = process(Image.fromarray(image[1], 'L'), imgH, int(max_width))
-print(image.shape)
+# to_pil_image(image[0]).show()
+# print(image.shape)
+# print(image.mean(), image.std())
 
 ort_session = onnxruntime.InferenceSession("recognizer.onnx")
 
@@ -91,6 +96,7 @@ ort_session = onnxruntime.InferenceSession("recognizer.onnx")
 ort_inputs = {ort_session.get_inputs()[0].name: to_numpy(image)}
 preds_onnx = ort_session.run(None, ort_inputs)[0]
 preds = torch.tensor(preds_onnx)
+print(preds.shape)
 
 # Select max probabilty (greedy decoding) then decode index to character
 preds_size = torch.IntTensor([preds.size(1)] * 1)
@@ -104,6 +110,7 @@ preds_prob = torch.from_numpy(preds_prob).float().to("cpu")
 
 _, preds_index = preds_prob.max(2)
 preds_index = preds_index.view(-1)
+# print(preds_index.data.cpu().detach().numpy().shape, preds_size.data)
 preds_str = decode_greedy(
     preds_index.data.cpu().detach().numpy(), preds_size.data)
 print(preds_str)
@@ -120,5 +127,6 @@ for v, i in zip(values, indices):
         preds_max_prob.append(np.array([0]))
 
 for pred, pred_max_prob in zip(preds_str, preds_max_prob):
+    print(len(pred_max_prob))
     confidence_score = custom_mean(pred_max_prob)
     print([pred, confidence_score])
