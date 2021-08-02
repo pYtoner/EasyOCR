@@ -32,7 +32,7 @@ recognizer, converter = get_recognizer(
     "0123456789!\"#$%&'()*+,-./:;<=>?@[\]^_`{|}~ €ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
     {},
     {'en': 'easyocr/dict/en.txt'},
-    "/root/.EasyOCR//model/english_g2.pth",
+    "/Users/nitram/.EasyOCR//model/english_g2.pth",
 )
 
 imgH = 64
@@ -56,25 +56,25 @@ with torch.no_grad():
     preds = recognizer(image)
     print(preds.shape)  # torch.Size([1, 175, 97])
 
-    torch.onnx.export(
-        model=recognizer,
-        args=(image,),
-        f="model.onnx",
-        opset_version=12,
-        input_names=['input'],
-        output_names=['output'],
-        dynamic_axes={
-            'input': {2: "height", 3: "width"},
-            'output': {1: "dim1", 2: "dim2"}
-        })
+    # torch.onnx.export(
+    #     model=recognizer,
+    #     args=(image,),
+    #     f="model.onnx",
+    #     opset_version=12,
+    #     input_names=['input'],
+    #     output_names=['output'],
+    #     dynamic_axes={
+    #         'input': {2: "height", 3: "width"},
+    #         'output': {1: "dim1", 2: "dim2"}
+    #     })
 
     # verify exported onnx model
-    recognizer_onnx = onnx.load("model.onnx")
+    recognizer_onnx = onnx.load("recognizer.onnx")
     onnx.checker.check_model(recognizer_onnx)
     # print(f"Model Inputs:\n {recognizer_onnx.graph.input}\n{'*'*80}")
     # print(f"Model Outputs:\n {recognizer_onnx.graph.output}\n{'*'*80}")
 
-    ort_session = onnxruntime.InferenceSession("model.onnx")
+    ort_session = onnxruntime.InferenceSession("recognizer.onnx")
 
     # compute ONNX Runtime output prediction
     ort_inputs = {ort_session.get_inputs()[0].name: to_numpy(image)}
