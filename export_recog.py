@@ -32,7 +32,7 @@ recognizer, converter = get_recognizer(
     "0123456789!\"#$%&'()*+,-./:;<=>?@[\]^_`{|}~ €ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
     {},
     {'en': 'easyocr/dict/en.txt'},
-    "/home/.EasyOCR//model/english_g2.pth",
+    "/root/.EasyOCR//model/english_g2.pth",
 )
 
 imgH = 64

@@ -176,8 +176,8 @@ class Reader(object):
                     recog_network = 'generation2'
             self.character = model['characters']
 
-            model_path = os.path.join(self.model_storage_directory, model['filename'])
-            print(self.model_storage_directory)
+            model_path = os.path.join(
+                self.model_storage_directory, model['filename'])
             # check recognition model file
             if recognizer:
                 if os.path.isfile(model_path) == False:
